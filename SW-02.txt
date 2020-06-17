@@ -1,0 +1,70 @@
+enable
+
+configure terminal
+hostname SW-02
+no ip domain-lookup
+enable secret TempleWater-123#
+service password-encryption
+ip domain-name watertemple.local
+crypto key generate rsa general-key modulus 1024
+banner motd "ACESSO APENAS PARA O DEPTO. DE TI DA WATER TEMPLE LTDA."
+security password min-length 8
+login block-for 180 attempts 3 within 60
+username hugolevy privilege 15 secret abninho1234
+username linkdoti privilege 15 secret hey-listen-3*
+username profmarcos privilege 15 secret jupira*00
+
+line console 0
+password filial*console
+login local
+exit
+
+line vty 0 15
+password filial*VTY
+login local
+transport input ssh
+exit
+
+vlan 10
+name ADMINISTRACAO
+exit
+vlan 20
+name TI
+exit
+vlan 30
+name SERVIDORES
+exit
+
+
+interface vlan 20
+ip address 172.16.1.45 255.255.255.240
+description INTERFACE DE GERENCIAMENTO
+exit
+
+interface range f0/4-23
+shutdown
+exit
+
+interface range g0/1-2
+shutdown
+exit
+
+interface range f0/1-2
+switchport mode access
+switchport access vlan 10
+exit
+
+interface range f0/3
+switchport mode access
+switchport access vlan 20
+exit
+
+interface f0/24
+switchport mode trunk
+switchport trunk native vlan 99
+switchport trunk allowed vlan 10,20,30,99
+exit
+
+
+end 
+wr
